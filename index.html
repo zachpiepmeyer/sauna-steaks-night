@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Sauna &amp; Steak Night</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥩</text></svg>">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   
@@ -20,10 +21,13 @@
 
   html, body {
     height: 100%;
+    max-height: 100%;
     background: var(--bg);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
 
   .app {
@@ -171,14 +175,15 @@
 
   .card-scroll-inner {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
+    overscroll-behavior: none;
     padding: 0 20px 20px;
-    display: flex;
-    flex-direction: column;
   }
 
   .person-card {
@@ -567,12 +572,21 @@ function showTab(name, btn) {
 // Touch swipe
 let sx = 0, sy = 0;
 const vp = document.getElementById('viewport');
-vp.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
+vp.addEventListener('touchstart', e => {
+  sx = e.touches[0].clientX;
+  sy = e.touches[0].clientY;
+}, {passive: true});
+vp.addEventListener('touchmove', e => {
+  const dx = Math.abs(e.touches[0].clientX - sx);
+  const dy = Math.abs(e.touches[0].clientY - sy);
+  // only prevent default for horizontal swipes so vertical scroll works
+  if (dx > dy) e.preventDefault();
+}, {passive: false});
 vp.addEventListener('touchend', e => {
   const dx = sx - e.changedTouches[0].clientX;
   const dy = sy - e.changedTouches[0].clientY;
   if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) nav(dx > 0 ? 1 : -1);
-}, {passive:true});
+}, {passive: true});
 </script>
 </body>
 </html>
